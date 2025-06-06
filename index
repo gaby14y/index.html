@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Conexão no Campo e na Cidade - Completo e Interativo</title>
+<style>
+  :root {
+    /* Light mode colors */
+    --color-bg: #ffffff;
+    --color-text-primary: #111827;
+    --color-text-secondary: #6b7280;
+    --color-accent: #111827;
+    --color-accent-light: #374151;
+    --shadow-subtle: rgba(0, 0, 0, 0.05);
+    --shadow-hover: rgba(17, 24, 39, 0.1);
+    --font-heading: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+      Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    --font-body: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+      Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    --border-radius: 0.75rem;
+    --max-width: 1200px;
+    --transition-fast: 0.25s cubic-bezier(0.4,0,0.2,1);
+    --transition-mid: 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+  /* Dark mode overrides */
+  body.dark-mode {
+    --color-bg: #1e293b;
+    --color-text-primary: #f1f5f9;
+    --color-text-secondary: #94a3b8;
+    --color-accent: #60a5fa;
+    --color-accent-light: #3b82f6;
+    --shadow-subtle: rgba(255, 255, 255, 0.05);
+    --shadow-hover: rgba(96, 165, 250, 0.3);
+    background-color: var(--color-bg);
+    color: var(--color-text-secondary);
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Poppins:wght@700&display=swap');
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    font-family: var(--font-body);
+    background: var(--color-bg);
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    font-size: 18px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color var(--transition-mid), color var(--transition-mid);
+  }
+  a {
+    color: var(--color-accent);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+  a:hover, a:focus {
+    color: var(--color-accent-light);
+    outline: none;
+  }
+  /* Container */
+  .container {
+    width: 90%;
+    max-width: var(--max-width);
+    margin-left: auto;
+    margin-right: auto;
+  }
+  /* Header */
+  header {
+    position: sticky;
+    top: 0;
+    background: var(--color-bg);
+    box-shadow: 0 1px 6px var(--shadow-subtle);
+    z-index: 100;
+    transition: background-color var(--transition-mid);
+  }
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+  }
+  .logo {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--color-accent);
+    user-select: none;
+  }
+  .nav-links {
+    display: flex;
+    gap: 1.5rem;
+    font-weight: 600;
+    align-items: center;
+  }
+  .nav-links a {
+    font-size: 1rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+    cursor: pointer;
+  }
+  .nav-links a:hover, .nav-links a:focus {
+    background-color: var(--shadow-subtle);
+    color: var(--color-accent);
+    outline: none;
+  }
+  /* Theme toggle button */
+  .theme-toggle {
+    cursor: pointer;
+    background-color: transparent;
+    border: 2px solid var(--color-accent);
+    border-radius: var(--border-radius);
+    padding: 0.25rem 0.75rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    font-size: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+  }
+  .theme-toggle:hover, .theme-toggle:focus {
+    background-color: var(--color-accent);
+    color: white;
+    outline: none;
+  }
+  .theme-icon {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+  }
+
+  /* Scroll progress bar */
+  #scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 4px;
+    background-color: var(--color-accent);
+    width: 0%;
+    z-index: 150;
+    transition: width 0.2s ease;
+  }
+
+  /* Hero Section */
+  .hero {
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+    text-align: center;
+    color: var(--color-text-primary);
+    transition: color var(--transition-mid);
+  }
+  .hero h1 {
+    font-family: var(--font-heading);
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    line-height: 1.1;
+  }
+  .hero p {
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 1.25rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 2.5rem;
+    transition: color var(--transition-mid);
+  }
+  .hero .btn-primary {
+    font-weight: 700;
+    font-size: 1.125rem;
+    background-color: var(--color-accent);
+    color: white;
+    padding: 0.75rem 2.5rem;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    box-shadow: 0 6px 12px rgba(17, 24, 39, 0.3);
+    transition: background-color var(--transition-fast), transform var(--transition-fast);
+    user-select:none;
+  }
+  .hero .btn-primary:hover,
+  .hero .btn-primary:focus {
+    background-color: var(--color-accent-light);
+    transform: scale(1.05);
+    outline: none;
+  }
+
+  /* Section general */
+  section {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+    transition: color var(--transition-mid), background-color var(--transition-mid);
+  }
+  .section-title {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 2.5rem;
+    color: var(--color-text-primary);
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  .section-subtitle {
+    color: var(--color-text-secondary);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 1.125rem;
+    margin-bottom: 3rem;
+    text-align: center;
+  }
+
+  /* Cards Grid */
+  .cards {
+    display: grid;
+    gap: 2.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+  .card {
+    background: #f9fafb;
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    box-shadow: 0 5px 15px var(--shadow-subtle);
+    color: var(--color-text-primary);
+    transition: box-shadow var(--transition-fast), transform var(--transition-fast), background-color var(--transition-fast), color var(--transition-fast);
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    outline-offset: 3px;
+  }
+  .card:hover, .card:focus-within {
+    box-shadow: 0 10px 30px var(--shadow-hover);
+    transform: translateY(-6px);
+    outline: none;
+  }
+  /* Card click highlight */
+  .card.active {
+    background-color: var(--color-accent);
+    color: white;
+    box-shadow: 0 12px 32px var(--color-accent-light);
+    transform: translateY(-6px) scale(1.03);
+  }
+  .card.active h3, .card.active p {
+    color: white;
+  }
+  .card h3 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.3rem;
+    margin: 0 0 0.25rem 0;
+    flex: 1 1 100%;
+  }
+  .card p {
+    font-size: 1rem;
+    line-height: 1.5;
+    flex: 1 1 100%;
+    margin: 0;
+  }
+  .card svg.icon {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    stroke: var(--color-accent);
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+    transition: stroke var(--transition-fast);
+    margin-top: 0.2rem;
+  }
+  .card.active svg.icon {
+    stroke: white;
+  }
+
+  /* Sections with alternate background */
+  #campo {
+    background:#f3f4f6;
+    transition: background-color var(--transition-mid);
+  }
+  body.dark-mode #campo {
+    background: #334155;
+  }
+
+  /* Accordion FAQ */
+  .faq {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .faq-item {
+    border-radius: var(--border-radius);
+    background: #f9fafb;
+    margin-bottom: 1rem;
+    box-shadow: 0 3px 7px var(--shadow-subtle);
+    transition: background-color var(--transition-fast);
+    overflow: hidden;
+  }
+  body.dark-mode .faq-item {
+    background: #293645;
+  }
+  .faq-header {
+    cursor: pointer;
+    padding: 1.25rem 1.5rem;
+    font-weight: 600;
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+    color: var(--color-text-primary);
+    transition: color var(--transition-fast);
+  }
+  body.dark-mode .faq-header {
+    color: var(--color-text-primary);
+  }
+  .faq-header:hover,
+  .faq-header:focus {
+    color: var(--color-accent);
+    outline: none;
+  }
+  .faq-content {
+    max-height: 0;
+    overflow: hidden;
+    padding: 0 1.5rem;
+    color: var(--color-text-secondary);
+    font-size: 1rem;
+    line-height: 1.5;
+    transition: max-height 0.35s ease, padding 0.35s ease;
+  }
+  .faq-content.open {
+    padding: 1rem 1.5rem 1.5rem;
+  }
+  .faq-icon {
+    width: 20px;
+    height: 20px;
+    stroke: var(--color-accent);
+    stroke-width: 3;
+    fill: none;
+    transition: transform var(--transition-fast);
+    flex-shrink: 0;
+  }
+  .faq-icon.open {
+    transform: rotate(45deg);
+  }
+  /* Newsletter form */
+  .newsletter {
+    max-width: 500px;
+    margin: 2rem auto 0 auto;
+    text-align: center;
+  }
+  .newsletter input[type="email"] {
+    width: 70%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--color-accent);
+    border-radius: var(--border-radius) 0 0 var(--border-radius);
+    font-size: 1rem;
+    transition: border-color var(--transition-fast);
+    font-family: var(--font-body);
+    color: var(--color-text-primary);
+  }
+  .newsletter input[type="email"]::placeholder {
+    color: var(--color-text-secondary);
+  }
+  .newsletter input[type="email"]:focus {
+    border-color: var(--color-accent-light);
+    outline: none;
+  }
+  .newsletter button {
+    width: 30%;
+    padding: 0.75rem 0;
+    font-weight: 600;
+    font-size: 1rem;
+    background-color: var(--color-accent);
+    color: white;
+    border: none;
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+    cursor: pointer;
+    box-shadow: 0 5px 10px rgba(17,24,39,0.25);
+    transition: background-color var(--transition-fast), transform var(--transition-fast);
+    user-select:none;
+  }
+  .newsletter button:hover,
+  .newsletter button:focus {
+    background-color: var(--color-accent-light);
+    transform: scale(1.05);
+    outline: none;
+  }
+  .newsletter .message {
+    margin-top: 1rem;
+    font-size: 1rem;
+    color: var(--color-accent-light);
+    font-weight: 600;
+  }
+  body.dark-mode .newsletter input[type="email"] {
+    background: #293645;
+    border-color: var(--color-accent-light);
+    color: var(--color-text-primary);
+  }
+  body.dark-mode .newsletter input[type="email"]::placeholder {
+    color: var(--color-text-secondary);
+  }
+  body.dark-mode .newsletter button {
+    box-shadow: 0 5px 10px rgba(59,130,246,0.75);
+  }
+
+  /* Back to top button */
+  #back-to-top {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    background-color: var(--color-accent);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 8px 16px rgba(17,24,39,0.3);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-fast);
+    user-select:none;
+    z-index: 120;
+  }
+  #back-to-top.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  #back-to-top:focus {
+    outline: 3px solid var(--color-accent-light);
+  }
+  #back-to-top svg {
+    stroke: white;
+    width: 20px;
+    height: 20px;
+    stroke-width: 3;
+    fill: none;
+  }
+
+  /* Sections with alternate background */
+  #campo {
+    background:#f3f4f6;
+    transition: background-color var(--transition-mid);
+  }
+  body.dark-mode #campo {
+    background: #334155;
+  }
+  /* Responsive adjustments */
+  @media (max-width: 600px) {
+    .hero h1 {
+      font-size: 2.5rem;
+    }
+    .section-title {
+      font-size: 2rem;
+    }
+    .newsletter input[type="email"],
+    .newsletter button {
+      width: 100%;
+      border-radius: var(--border-radius);
+      margin: 0.25rem 0;
+      display: block;
+    }
+    .newsletter button {
+      margin-top: 0.5rem;
+      width: 100%;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div id="scroll-progress" aria-hidden="true"></div>
+
+<header role="banner">
+  <nav class="container" aria-label="Navegação Principal">
+    <a href="#" class="logo" tabindex="0">Conexão RC</a>
+    <div class="nav-links">
+      <a href="#cidade" tabindex="0">Cidade</a>
+      <a href="#campo" tabindex="0">Campo</a>
+      <a href="#beneficios" tabindex="0">Benefícios</a>
+      <a href="#faq" tabindex="0">FAQ</a>
+      <button id="theme-toggle" class="theme-toggle" aria-label="Alternar tema claro e escuro" title="Alternar tema claro e escuro" >
+        <svg class="theme-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <path id="icon-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 3v1m0 16v1m8.66-8.66h-1M4.34 12h-1m15.01 5.66l-.7-.7M6.34 6.34l-.7-.7m12.02 12.02l-.7.7M6.34 17.66l-.7.7M12 7a5 5 0 000 10 5 5 0 000-10z" />
+        </svg>
+        <span id="theme-label">Escuro</span>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <section class="hero" aria-label="Apresentação principal">
+    <div class="container">
+      <h1>Conectando o Campo e a Cidade</h1>
+      <p>Descubra como a conectividade moderna aproxima comunidades rurais e urbanas, trazendo oportunidades iguais para todos.</p>
+      <button class="btn-primary" onclick="document.getElementById('beneficios').scrollIntoView({behavior:'smooth'})" aria-label="Saiba mais sobre benefícios">Saiba Mais</button>
+    </div>
+  </section>
+
+  <section id="cidade" aria-labelledby="cidade-title" tabindex="-1">
+    <div class="container">
+      <h2 class="section-title" id="cidade-title">Conectividade na Cidade</h2>
+      <p class="section-subtitle">Infraestrutura avançada para ambientes urbanos, garantindo acesso rápido e confiável.</p>
+      <div class="cards" role="list">
+        <article class="card" role="listitem" tabindex="0" aria-pressed="false">
+          <svg class="icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M3 12h18M7 16h1a4 4 0 010 8H7a9 9 0 010-18h1a4 4 0 010 8H7"/></svg>
+          <div>
+            <h3>Internet de Fibra Óptica</h3>
+            <p>Velocidades ultra-rápidas e baixa latência com fibra diretamente nas residências e empresas.</p>
+          </div>
+        </article>
+        <article class="card" role="listitem" tabindex="0" aria-pressed="false">
+          <svg class="icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M4 12h16"/></svg>
+          <div>
+            <h3>Redes 5G e Wi-Fi Público</h3>
+            <p>Conexões móveis e públicas para garantir mobilidade e acesso em qualquer lugar da cidade.</p>
+          </div>
+        </article>
+        <article class="card" role="listitem" tabindex="0" aria-pressed="false">
+          <svg class="icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/></svg>
+          <div>
+            <h3>Centros de Dados no Próprio Bairro</h3>
+            <p>Serviços rápida resposta com servidores próximos, suportando alta demanda digital.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="campo" aria-labelledby="campo-title" tabindex="-1">
+    <div class="container">
+      <h2 class="section-title" id="campo-title">Conectividade no Campo</h2>
+      <p class="section-subtitle">Tecnologias inovadoras para levar conexão confiável a áreas rurais e remotas.</p>
+      <div class="cards" role="list">
+        <article class="card" role="listitem" tabindex="0" aria-pressed="false">
+          <svg class="icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M12 3v18"/></svg>
+          <div>
+            <h3>Internet via Satélite</h3>
+            <p>Acesso em locais isolados, sem depender de infraestrutura terrestre tradicional.</p>
+          </div>
+        </article>
+        <article class="card" role="listitem" tabindex="0" aria-pressed="false">
+          <svg class="icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M2 20h20"/></svg>
+          <div>
+            <h3>Redes 4G LTE para Áreas Rurais</h3>
+            <p>Conexão móvel abrangente para agricultores, trabalhadores rurais e pequenas comunidades.</p>
+          </div>
+        </article>
+        <article class="card" role="listitem" tabindex="0" aria-pressed="false">
+          <svg class="icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+          <div>
+            <h3>Parcerias para Expansão da Fibra</h3>
+            <p>Projetos colaborativos para ampliar a infraestrutura e reduzir a exclusão digital.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="beneficios" aria-labelledby="beneficios-title" tabindex="-1">
+    <div class="container">
+      <h2 class="section-title" id="beneficios-title">Benefícios da Conexão no Campo e na Cidade</h2>
+      <p class="section-subtitle">Tecnologia que impulsiona desenvolvimento, educação e qualidade de vida, independente da localidade.</p>
+      <div class="cards" role="list">
+        <article class="card" role="listitem" tabindex="0" aria-pressed="false">
+          <svg class="icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/></svg>
+          <div>
+            <h3>Inclusão Digital</h3>
+            <p>Garantindo que todos tenham acesso às informações e oportunidades do mundo digital.</p>
+          </div>
+        </article>
+        <article class="card" role="listitem" tabindex="0" aria-pressed="false">
+          <svg class="icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M3 12h18"/></svg>
+          <div>
+            <h3>Desenvolvimento Econômico</h3>
+            <p>Empoderando negócios de todos os tamanhos, de startups urbanas aos produtores rurais.</p>
+          </div>
+        </article>
+        <article class="card" role="listitem" tabindex="0" aria-pressed="false">
+          <svg class="icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M12 8v8m-4-4h8"/></svg>
+          <div>
+            <h3>Educação e Saúde Remotas</h3>
+            <p>Acesso a aulas, consultorias e cuidados médicos via internet, ampliando o alcance.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq" aria-labelledby="faq-title" tabindex="-1">
+    <div class="container">
+      <h2 class="section-title" id="faq-title">Perguntas Frequentes</h2>
+      <div class="faq" role="list">
+        <div class="faq-item" role="listitem">
+          <button class="faq-header" aria-expanded="false" aria-controls="faq1-content" id="faq1-header">
+            Qual a principal diferença entre conectividade na cidade e no campo?
+            <svg class="faq-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div id="faq1-content" class="faq-content" role="region" aria-labelledby="faq1-header">
+            A infraestrutura urbana geralmente é mais avançada e diversificada, enquanto no campo as soluções focam em tecnologias que funcionam em locais remotos e isolados.
+          </div>
+        </div>
+        <div class="faq-item" role="listitem">
+          <button class="faq-header" aria-expanded="false" aria-controls="faq2-content" id="faq2-header">
+            Como o satélite ajuda a conectar áreas rurais?
+            <svg class="faq-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div id="faq2-content" class="faq-content" role="region" aria-labelledby="faq2-header">
+            A internet via satélite oferece acesso onde não há infraestrutura terrestre, permitindo conexão em áreas muito remotas.
+          </div>
+        </div>
+        <div class="faq-item" role="listitem">
+          <button class="faq-header" aria-expanded="false" aria-controls="faq3-content" id="faq3-header">
+            Quais são os principais benefícios da inclusão digital?
+            <svg class="faq-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div id="faq3-content" class="faq-content" role="region" aria-labelledby="faq3-header">
+            Facilita o acesso à educação, saúde, oportunidades econômicas e promove a igualdade social em todas as regiões.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="newsletter" aria-labelledby="newsletter-title" tabindex="-1">
+    <div class="container newsletter">
+      <h2 id="newsletter-title" class="section-title">Assine nossa Newsletter</h2>
+      <p class="section-subtitle">Receba novidades sobre conectividade no campo e na cidade.</p>
+      <form id="newsletter-form" novalidate>
+        <input type="email" id="email" name="email" placeholder="seu.email@exemplo.com" aria-label="Seu e-mail" required />
+        <button type="submit" aria-label="Assinar newsletter">Assinar</button>
+        <div class="message" aria-live="polite" aria-atomic="true"></div>
+      </form>
+    </div>
+  </section>
+</main>
+
+<button id="back-to-top" aria-label="Voltar ao topo" title="Voltar ao topo" type="button" aria-hidden="true" tabindex="-1">
+  <svg viewBox="0 0 24 24"  aria-hidden="true">
+    <path d="M6 15l6-6 6 6" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</button>
+
+<script>
+  // Dark mode toggle
+  const themeToggleBtn = document.getElementById('theme-toggle');
+  const themeLabel = document.getElementById('theme-label');
+  const iconPath = document.getElementById('icon-path');
+  const bodyEl = document.body;
+
+  function setLightMode() {
+    bodyEl.classList.remove('dark-mode');
+    themeLabel.textContent = 'Escuro';
+    iconPath.setAttribute('d', 'M12 3v1m0 16v1m8.66-8.66h-1M4.34 12h-1m15.01 5.66l-.7-.7M6.34 6.34l-.7-.7m12.02 12.02l-.7.7M6.34 17.66l-.7.7M12 7a5 5 0 000 10 5 5 0 000-10z');
+  }
+  function setDarkMode() {
+    bodyEl.classList.add('dark-mode');
+    themeLabel.textContent = 'Claro';
+    iconPath.setAttribute('d', 'M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z');
+  }
+
+  // Initialize theme based on localStorage or prefers-color-scheme
+  function initTheme() {
+    const persisted = localStorage.getItem('theme');
+    if (persisted === 'dark' || (!persisted && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      setDarkMode();
+    } else {
+      setLightMode();
+    }
+  }
+
+  themeToggleBtn.addEventListener('click', () => {
+    if (bodyEl.classList.contains('dark-mode')) {
+      setLightMode();
+      localStorage.setItem('theme', 'light');
+    } else {
+      setDarkMode();
+      localStorage.setItem('theme', 'dark');
+    }
+  });
+
+  initTheme();
+
+  // Card click toggle highlight for focus and interactivity
+  const cards = document.querySelectorAll('.card');
+  cards.forEach(card => {
+    card.addEventListener('click', () => {
+      card.classList.toggle('active');
+      const pressed = card.getAttribute('aria-pressed') === 'true';
+      card.setAttribute('aria-pressed', String(!pressed));
+    });
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        card.click();
+      }
+    });
+  });
+
+  // FAQ accordion
+  const faqHeaders = document.querySelectorAll('.faq-header');
+  faqHeaders.forEach(header => {
+    header.addEventListener('click', () => {
+      const expanded = header.getAttribute('aria-expanded') === 'true';
+      header.setAttribute('aria-expanded', String(!expanded));
+      const content = document.getElementById(header.getAttribute('aria-controls'));
+
+      if (!expanded) {
+        content.style.maxHeight = content.scrollHeight + 'px';
+        content.classList.add('open');
+        header.querySelector('.faq-icon').classList.add('open');
+      } else {
+        content.style.maxHeight = null;
+        content.classList.remove('open');
+        header.querySelector('.faq-icon').classList.remove('open');
+      }
+    });
+
+    // Keyboard accessibility
+    header.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        header.click();
+      }
+    });
+  });
+
+  // Newsletter form validation and message
+  const form = document.getElementById('newsletter-form');
+  const emailInput = document.getElementById('email');
+  const messageDiv = form.querySelector('.message');
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    messageDiv.textContent = '';
+    const email = emailInput.value.trim();
+
+    const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if (!emailValid) {
+      messageDiv.style.color = 'crimson';
+      messageDiv.textContent = 'Por favor, insira um e-mail válido.';
+      emailInput.focus();
+      return;
+    }
+    messageDiv.style.color = 'var(--color-accent-light)';
+    messageDiv.textContent = 'Obrigado por assinar a nossa newsletter!';
+    form.reset();
+  });
+
+  // Scroll progress bar
+  const progressBar = document.getElementById('scroll-progress');
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    const height = document.documentElement.scrollHeight - window.innerHeight;
+    const percent = (scrollTop / height) * 100;
+    progressBar.style.width = percent + '%';
+
+    // Show "back to top" button after scrolling 300px
+    if(scrollTop > 300) {
+      backToTopBtn.classList.add('visible');
+      backToTopBtn.setAttribute('aria-hidden', 'false');
+      backToTopBtn.tabIndex = 0;
+    } else {
+      backToTopBtn.classList.remove('visible');
+      backToTopBtn.setAttribute('aria-hidden', 'true');
+      backToTopBtn.tabIndex = -1;
+    }
+  });
+
+  // Back to top button
+  const backToTopBtn = document.getElementById('back-to-top');
+  backToTopBtn.addEventListener('click', () => {
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  });
+  backToTopBtn.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      backToTopBtn.click();
+    }
+  });
+
+  // Adjust smooth scroll offset for sticky header navigation clicks
+  // Use JS to override default anchor jumps for all nav and internal links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      e.preventDefault();
+      const targetId = this.getAttribute('href').substring(1);
+      const targetElem = document.getElementById(targetId);
+      if (!targetElem) return;
+      const headerOffset = document.querySelector('header').offsetHeight;
+      const elementPosition = targetElem.getBoundingClientRect().top + window.scrollY;
+      const offsetPosition = elementPosition - headerOffset - 12;
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+      // Focus target for accessibility
+      targetElem.focus();
+    });
+  });
+</script>
+
+</body>
+</html>
+
